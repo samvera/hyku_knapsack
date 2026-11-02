@@ -4,10 +4,14 @@ module HykuKnapsack
   class Engine < ::Rails::Engine
     isolate_namespace HykuKnapsack
 
-    # Rails serves the host app's public/ only; without this anything the
-    # knapsack ships there, such as a generated IIIF viewer, 404s.
+    # Rails serves the host app's public/ only. Ahead of Hyku's Static so a knapsack
+    # file at the same path, such as clover/clover.html, wins over Hyku's copy.
     initializer 'hyku_knapsack.static_assets' do |app|
-      app.middleware.use ::ActionDispatch::Static, HykuKnapsack::Engine.root.join('public').to_s
+      if app.config.public_file_server.enabled
+        app.middleware.insert_before ::ActionDispatch::Static, ::ActionDispatch::Static,
+                                     HykuKnapsack::Engine.root.join('public').to_s,
+                                     headers: app.config.public_file_server.headers
+      end
     end
 
     # Flipflop loads the host app's config/features.rb only; register the
