@@ -16,6 +16,9 @@ module HykuKnapsack
       Flipflop::FeatureLoader.current.append(HykuKnapsack::Engine.instance)
     end
 
+    # Keep Rails from loading these too; the initializer below loads them after the host app's.
+    config.paths.add 'config/initializers', with: []
+
     # Load knapsack initializers from config/initializers/ AFTER the host app's
     # initializers run (e.g. after hyku's 1flexible.rb), so knapsack overrides win.
     initializer 'hyku_knapsack.load_initializers', after: :load_config_initializers do
