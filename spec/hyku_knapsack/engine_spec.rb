@@ -15,6 +15,12 @@ RSpec.describe HykuKnapsack::Engine do
     end
   end
 
+  describe 'initializers' do
+    it 'are left to the engine to load, so Rails does not load them a second time' do
+      expect(described_class.paths['config/initializers'].existent).to be_empty
+    end
+  end
+
   describe 'translations' do
     # A knapsack locale file overriding a key Hyku's own locales also define (Hyku's beats Hyrax's).
     let(:key) { 'hyrax.homepage.featured_researcher.missing' }
