@@ -4,14 +4,15 @@ require 'rails_helper'
 
 RSpec.describe HykuKnapsack::Engine do
   describe 'static assets' do
-    let(:static_roots) do
-      Rails.application.middleware
-           .select { |middleware| middleware.name == 'ActionDispatch::Static' }
-           .flat_map(&:args)
+    let(:static_roots) { statics.map { |static| static.args.first } }
+    let(:statics) { Rails.application.middleware.select { |middleware| middleware.name == 'ActionDispatch::Static' } }
+
+    it "serves the knapsack public directory ahead of Hyku's" do
+      expect(static_roots).to start_with described_class.root.join('public').to_s, Rails.public_path.to_s
     end
 
-    it 'serves the knapsack public directory' do
-      expect(static_roots).to include described_class.root.join('public').to_s
+    it "sends the same cache headers as Hyku's public directory" do
+      expect(statics.first.args.last).to eq(headers: Rails.application.config.public_file_server.headers)
     end
   end
 
