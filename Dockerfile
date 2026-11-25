@@ -11,7 +11,11 @@ ENV LD_PRELOAD=/usr/lib/libjemalloc.so.2
 ENV MALLOC_CONF='dirty_decay_ms:1000,narenas:2,background_thread:true'
 
 ENV TESSDATA_PREFIX=/app/samvera/tessdata
-ADD https://raw.githubusercontent.com/tesseract-ocr/tessdata_best/main/eng.traineddata /app/samvera/tessdata/eng_best.traineddata
+ADD --chmod=755 https://raw.githubusercontent.com/tesseract-ocr/tessdata_best/main/eng.traineddata /app/samvera/tessdata/eng_best.traineddata
+
+USER root
+RUN cp -r /usr/share/tesseract-ocr/5/tessdata/configs /app/samvera/tessdata/configs
+USER app
 
 ############### KNAPSACK SPECIFIC CODE ###################
 # This means bundler inject looks at /app/samvera/.bundler.d for overrides
